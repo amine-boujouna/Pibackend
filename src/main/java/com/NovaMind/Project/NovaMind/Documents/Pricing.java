@@ -18,6 +18,8 @@ public class Pricing {
 
     private Long id;
     private float price;
+    @Enumerated(EnumType.STRING)
+
     private TypePricing  typepricing;
     private Date start_date;
     private Date end_date;

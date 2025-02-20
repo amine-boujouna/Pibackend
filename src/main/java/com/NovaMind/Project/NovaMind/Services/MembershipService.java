@@ -11,10 +11,12 @@ import java.util.List;
 @Service
 public class MembershipService {
     private final MemberShipRepository membershipRepository;
+    private final PricingService pricingService;
 
     @Autowired
-    public MembershipService(MemberShipRepository membershipRepository) {
+    public MembershipService(MemberShipRepository membershipRepository,PricingService pricingService) {
         this.membershipRepository = membershipRepository;
+        this.pricingService=pricingService;
     }
 
     public List<MemberShip> getAllMemberships() {
@@ -43,7 +45,10 @@ public class MembershipService {
     }
 
     public void deleteMembership(Long id) {
+        pricingService.deleteByMembershipId(id);
+
         membershipRepository.deleteById(id);
     }
+
 }
 

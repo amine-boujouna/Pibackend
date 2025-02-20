@@ -1,7 +1,10 @@
 package com.NovaMind.Project.NovaMind.controller;
 
 import com.NovaMind.Project.NovaMind.Documents.MemberShip;
+import com.NovaMind.Project.NovaMind.Documents.Pricing;
+import com.NovaMind.Project.NovaMind.Repositories.MemberShipRepository;
 import com.NovaMind.Project.NovaMind.Services.MembershipService;
+import com.NovaMind.Project.NovaMind.Services.PricingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,10 +17,12 @@ import java.util.List;
 @CrossOrigin("*")
 public class MembershipController {
     private final MembershipService membershipService;
+    private final PricingService pricingService;
 
     @Autowired
-    public MembershipController(MembershipService membershipService) {
+    public MembershipController(MembershipService membershipService,PricingService pricingService) {
         this.membershipService = membershipService;
+        this.pricingService=pricingService;
     }
 
     @GetMapping
@@ -45,4 +50,8 @@ public class MembershipController {
         membershipService.deleteMembership(id);
         return ResponseEntity.noContent().build();
     }
+
+
+
+
 }

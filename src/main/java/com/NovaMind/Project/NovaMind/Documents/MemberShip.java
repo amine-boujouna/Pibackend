@@ -26,7 +26,7 @@ public class MemberShip {
     @Enumerated(EnumType.STRING)
     private MembershipType membershipType;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private Pricing pricing;
 
     public Long getId() {
