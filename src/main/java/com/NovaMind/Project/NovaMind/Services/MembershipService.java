@@ -3,10 +3,14 @@ package com.NovaMind.Project.NovaMind.Services;
 import com.NovaMind.Project.NovaMind.Documents.MemberShip;
 import com.NovaMind.Project.NovaMind.Repositories.MemberShipRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.Serial;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class MembershipService {
@@ -49,6 +53,46 @@ public class MembershipService {
 
         membershipRepository.deleteById(id);
     }
+
+    public void archiveMembership(Long id) {
+        Optional<MemberShip> membershipOpt = membershipRepository.findById(id);
+        if (membershipOpt.isPresent()) {
+            MemberShip membership = membershipOpt.get();
+            membership.setArchived(true);
+            membership.setStatus("INACTIVE");
+            membershipRepository.save(membership);
+        }
+    }
+    public void restoreMembership(Long id) {
+        Optional<MemberShip> membershipOpt = membershipRepository.findById(id);
+        if (membershipOpt.isPresent()) {
+            MemberShip membership = membershipOpt.get();
+            membership.setArchived(false);
+            membership.setStatus("ACTIVE");
+            membershipRepository.save(membership);
+        }
+    }
+    public List<MemberShip> getActiveMemberships() {
+        return membershipRepository.findByArchivedFalse();
+    }
+
+    public List<MemberShip> getArchivedMemberships() {
+        return membershipRepository.findByArchivedTrue();
+    }
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void autoArchiveExpiredMemberships() {
+        List<MemberShip> expiredMemberships = membershipRepository.findByArchivedFalse()
+                .stream()
+                .filter(m -> m.getEnd_date().before(new Date()))
+                .collect(Collectors.toList());
+
+        for (MemberShip membership : expiredMemberships) {
+            membership.setArchived(true);
+            membership.setStatus("INACTIVE");
+            membershipRepository.save(membership);
+        }
+    }
+
 
 }
 

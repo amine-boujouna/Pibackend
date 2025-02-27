@@ -25,9 +25,22 @@ public class MemberShip {
     private Date end_date;
     @Enumerated(EnumType.STRING)
     private MembershipType membershipType;
+    @Enumerated(EnumType.STRING)
+    private SubscriptionPlan subscriptionPlan;
+
+
 
     @OneToOne(cascade = CascadeType.ALL)
     private Pricing pricing;
+    private boolean archived = false;
+
+    public boolean isArchived() {
+        return archived;
+    }
+
+    public void setArchived(boolean archived) {
+        this.archived = archived;
+    }
 
     public Long getId() {
         return id;

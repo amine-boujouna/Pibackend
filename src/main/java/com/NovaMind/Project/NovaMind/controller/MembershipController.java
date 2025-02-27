@@ -10,7 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/memberships")
@@ -51,7 +53,40 @@ public class MembershipController {
         return ResponseEntity.noContent().build();
     }
 
+    @PutMapping("/{id}/archive")
+    public ResponseEntity<Map<String, String>> archiveMembership(@PathVariable Long id) {
+        membershipService.archiveMembership(id);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Membership archivé avec succès.");
+        return ResponseEntity.ok(response);
+    }
 
 
+    @PutMapping("/{id}/restore")
+    public ResponseEntity<Map<String, String>> restoreMembership(@PathVariable Long id) {
+        membershipService.restoreMembership(id);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Membership restauré avec succès.");
+
+        return ResponseEntity.ok(response);  
+    }
+
+
+    @GetMapping("/active")
+    public List<MemberShip> getActiveMemberships() {
+        return membershipService.getActiveMemberships();
+    }
+
+    @GetMapping("/archived")
+    public List<MemberShip> getArchivedMemberships() {
+        return membershipService.getArchivedMemberships();
+    }
+    @PutMapping("/auto-archive")
+    public ResponseEntity<String> autoArchiveExpiredMemberships() {
+        membershipService.autoArchiveExpiredMemberships();
+        return ResponseEntity.ok("Archivage automatique exécuté avec succès.");
+    }
 
 }
