@@ -1,5 +1,6 @@
 package com.NovaMind.Project.NovaMind.Documents;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -23,8 +25,20 @@ public class Course {
         private String tutorName;
         @Temporal(TemporalType.TIMESTAMP)
         private Date createdAt;
-        @ManyToOne
+         private String imageUrl;
+    @ManyToOne
         MemberShip memberShip;
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<CourseModule> modules;
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 
     public Long getId() {
         return id;

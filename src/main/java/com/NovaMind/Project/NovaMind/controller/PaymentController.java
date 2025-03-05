@@ -1,6 +1,11 @@
 package com.NovaMind.Project.NovaMind.controller;
 
+import com.NovaMind.Project.NovaMind.Documents.MemberShip;
 import com.NovaMind.Project.NovaMind.Documents.Payment;
+import com.NovaMind.Project.NovaMind.Documents.PaymentDetails;
+import com.NovaMind.Project.NovaMind.Documents.PaymentRequest;
+import com.NovaMind.Project.NovaMind.Repositories.MemberShipRepository;
+import com.NovaMind.Project.NovaMind.Services.MembershipService;
 import com.NovaMind.Project.NovaMind.Services.PaymentService;
 import com.NovaMind.Project.NovaMind.Services.StripePaymentService;
 import com.stripe.exception.StripeException;
@@ -22,6 +27,8 @@ public class PaymentController {
     private StripePaymentService stripePaymentService;
     @Autowired
     private PaymentService paymentService;
+    @Autowired
+    private MemberShipRepository memberShipRepository;
 
     @PostMapping("/create-payment-intent")
     public ResponseEntity<?> createPaymentIntent(@RequestBody Map<String, Object> request) {
@@ -49,15 +56,38 @@ public class PaymentController {
             return ResponseEntity.badRequest().body(Map.of("error", "Méthode de paiement non spécifiée"));
         }
 
-        Payment payment = paymentService.recordPayment(
-                request.getMembershipId(),
-                request.getAmount(),
-                request.getDuration(),
-                request.getPaymentMethod()
-        );
 
-        String message = "Paiement réussi pour l'abonnement ID: " + payment.getMembershipId() + ". Montant: " + payment.getAmount() + "€.";
+
+        String message = "Paiement réussi pour l'abonnement ID: " + "€.";
         return ResponseEntity.ok(Map.of("message", message));
     }
+
+    @PostMapping("/process/{membershipId}")
+    public Payment processPayment(@PathVariable("membershipId") Long membershipId, @RequestBody PaymentRequest request) {
+        Payment payment = new Payment();
+        payment.setAmount(request.getAmount());
+        payment.setDuration(request.getDuration());
+        payment.setPaymentMethod(request.getPaymentMethod());
+
+        // Récupérer le membre associé avec l'ID du membership passé dans l'URL
+        MemberShip membership = memberShipRepository.findById(membershipId)
+                .orElseThrow(() -> new IllegalArgumentException("Membre non trouvé"));
+
+        payment.setMembership(membership); // Assigner le membre au paiement
+
+        // Enregistrer les détails du paiement
+        PaymentDetails paymentDetails = new PaymentDetails();
+        if ("CARTE".equalsIgnoreCase(request.getPaymentMethod())) {
+            paymentDetails.setCardNumber(request.getCardNumber());
+            paymentDetails.setExpiryDate(request.getExpiryDate());
+            paymentDetails.setCvv(request.getCvv());
+        } else if ("PAYPAL".equalsIgnoreCase(request.getPaymentMethod())) {
+            paymentDetails.setPaypalTransactionId(request.getPaypalTransactionId());
+        }
+
+        // Traiter le paiement
+        return paymentService.processPayment(payment, paymentDetails);
+    }
+
 
 }

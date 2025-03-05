@@ -1,9 +1,6 @@
 package com.NovaMind.Project.NovaMind.Documents;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
@@ -15,12 +12,15 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long membershipId;
     private Double amount;
     private String duration; // "MOIS", "ANNEE", "SEMAINE"
     private String paymentMethod; // "CARTE", "PAYPAL", etc.
     private LocalDateTime paymentDate;
-
+    @OneToOne(mappedBy = "payment", cascade = CascadeType.ALL)
+    private PaymentDetails paymentDetails; // Détails du paiement
+    @ManyToOne // Chaque paiement peut être lié à un abonnement
+    @JoinColumn(name = "membership_id", referencedColumnName = "id") // Relier au champ "id" de l'entité Membership
+    private MemberShip membership; // Relation avec l'entité Membership
     // Getters et Setters
     public Long getId() {
         return id;
@@ -30,12 +30,12 @@ public class Payment {
         this.id = id;
     }
 
-    public Long getMembershipId() {
-        return membershipId;
+    public MemberShip getMembership() {
+        return membership;
     }
 
-    public void setMembershipId(Long membershipId) {
-        this.membershipId = membershipId;
+    public void setMembership(MemberShip membership) {
+        this.membership = membership;
     }
 
     public Double getAmount() {
@@ -68,5 +68,13 @@ public class Payment {
 
     public void setPaymentDate(LocalDateTime paymentDate) {
         this.paymentDate = paymentDate;
+    }
+
+    public PaymentDetails getPaymentDetails() {
+        return paymentDetails;
+    }
+
+    public void setPaymentDetails(PaymentDetails paymentDetails) {
+        this.paymentDetails = paymentDetails;
     }
 }

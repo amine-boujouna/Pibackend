@@ -74,9 +74,11 @@ public class MembershipController {
     }
 
 
+
     @GetMapping("/active")
     public List<MemberShip> getActiveMemberships() {
-        return membershipService.getActiveMemberships();
+        List<MemberShip> activeMemberships = membershipService.getActiveMemberships();
+        return activeMemberships;
     }
 
     @GetMapping("/archived")

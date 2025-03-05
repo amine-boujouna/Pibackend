@@ -1,5 +1,6 @@
 package com.NovaMind.Project.NovaMind.Documents;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Getter
@@ -27,8 +29,29 @@ public class MemberShip {
     private MembershipType membershipType;
     @Enumerated(EnumType.STRING)
     private SubscriptionPlan subscriptionPlan;
+    @OneToMany(mappedBy = "memberShip")
+    private List<Course> courses;
 
 
+    @OneToMany(mappedBy = "membership") // Lien inverse de la relation ManyToOne dans Payment
+    @JsonIgnore
+    private List<Payment> payments;
+
+    public SubscriptionPlan getSubscriptionPlan() {
+        return subscriptionPlan;
+    }
+
+    public void setSubscriptionPlan(SubscriptionPlan subscriptionPlan) {
+        this.subscriptionPlan = subscriptionPlan;
+    }
+
+    public List<Payment> getPayments() {
+        return payments;
+    }
+
+    public void setPayments(List<Payment> payments) {
+        this.payments = payments;
+    }
 
     @OneToOne(cascade = CascadeType.ALL)
     private Pricing pricing;
