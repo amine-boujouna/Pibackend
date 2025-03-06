@@ -1,10 +1,10 @@
 package com.NovaMind.Project.NovaMind.controller;
 
-import com.NovaMind.Project.NovaMind.Documents.MemberShip;
-import com.NovaMind.Project.NovaMind.Documents.Payment;
-import com.NovaMind.Project.NovaMind.Documents.PaymentDetails;
-import com.NovaMind.Project.NovaMind.Documents.PaymentRequest;
+import com.NovaMind.Project.NovaMind.Documents.*;
+import com.NovaMind.Project.NovaMind.Exception.ResourceNotFoundException;
+import com.NovaMind.Project.NovaMind.Repositories.CourseRepository;
 import com.NovaMind.Project.NovaMind.Repositories.MemberShipRepository;
+import com.NovaMind.Project.NovaMind.Repositories.ModuleRepository;
 import com.NovaMind.Project.NovaMind.Services.MembershipService;
 import com.NovaMind.Project.NovaMind.Services.PaymentService;
 import com.NovaMind.Project.NovaMind.Services.StripePaymentService;
@@ -29,6 +29,10 @@ public class PaymentController {
     private PaymentService paymentService;
     @Autowired
     private MemberShipRepository memberShipRepository;
+    @Autowired
+    private CourseRepository courseRepository;
+    @Autowired
+    private ModuleRepository courseModuleRepository;
 
     @PostMapping("/create-payment-intent")
     public ResponseEntity<?> createPaymentIntent(@RequestBody Map<String, Object> request) {
@@ -60,6 +64,13 @@ public class PaymentController {
 
         String message = "Paiement réussi pour l'abonnement ID: " + "€.";
         return ResponseEntity.ok(Map.of("message", message));
+    }
+
+
+    @PostMapping("/payModule/{moduleId}")
+    public ResponseEntity<Payment> payForModule(@PathVariable Long moduleId, @RequestBody PaymenetRequest paymentRequest) {
+        Payment payment = paymentService.processPaymentmodule(moduleId, paymentRequest);
+        return ResponseEntity.ok(payment);
     }
 
     @PostMapping("/process/{membershipId}")

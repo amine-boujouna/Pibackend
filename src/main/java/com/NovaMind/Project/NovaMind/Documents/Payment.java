@@ -3,6 +3,7 @@ package com.NovaMind.Project.NovaMind.Documents;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 public class Payment {
@@ -20,8 +21,33 @@ public class Payment {
     private PaymentDetails paymentDetails; // Détails du paiement
     @ManyToOne // Chaque paiement peut être lié à un abonnement
     @JoinColumn(name = "membership_id", referencedColumnName = "id") // Relier au champ "id" de l'entité Membership
-    private MemberShip membership; // Relation avec l'entité Membership
+    private MemberShip membership; // Relation avec l'entité
+    private Boolean ispaied;
     // Getters et Setters
+    @ManyToMany
+    @JoinTable(
+            name = "payment_modules",
+            joinColumns = @JoinColumn(name = "payment_id"),
+            inverseJoinColumns = @JoinColumn(name = "module_id")
+    )
+    private List<CourseModule> modules;
+
+    public List<CourseModule> getModules() {
+        return modules;
+    }
+
+    public void setModules(List<CourseModule> modules) {
+        this.modules = modules;
+    }
+
+    public Boolean getIspaied() {
+        return ispaied;
+    }
+
+    public void setIspaied(Boolean ispaied) {
+        this.ispaied = ispaied;
+    }
+
     public Long getId() {
         return id;
     }

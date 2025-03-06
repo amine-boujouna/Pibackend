@@ -26,6 +26,7 @@ public class Course {
         @Temporal(TemporalType.TIMESTAMP)
         private Date createdAt;
          private String imageUrl;
+         private int prix ;
     @ManyToOne
         MemberShip memberShip;
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -34,6 +35,22 @@ public class Course {
 
     public String getImageUrl() {
         return imageUrl;
+    }
+
+    public List<CourseModule> getModules() {
+        return modules;
+    }
+
+    public void setModules(List<CourseModule> modules) {
+        this.modules = modules;
+    }
+
+    public int getPrix() {
+        return prix;
+    }
+
+    public void setPrix(int prix) {
+        this.prix = prix;
     }
 
     public void setImageUrl(String imageUrl) {
